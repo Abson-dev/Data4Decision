@@ -9,11 +9,13 @@ Food insecurity is widespread, affecting 94% of refugees and 93% of host househo
 To address these challenges, integrated interventions are recommended. These include expanding food assistance and livelihood programs to address food insecurity (SDG 2); improving school access and incentives, especially for host communities (SDG 4); strengthening healthcare services and disability support (SDG 3); investing in clean energy technologies like cookstoves and solar kits (SDG 7); scaling up WASH infrastructure to improve sanitation and water access (SDG 6); developing affordable housing and urban planning strategies (SDG 11); and enhancing protection services and community-based safety initiatives (SDG 16).
 
 For more information, please read the [report](https://kcgu.my.canva.site/d4d-document) and [presentation](https://kcgu.my.canva.site/d4d-document).
-See our [UNHCR Datathon Variables processing](https://docs.google.com/spreadsheets/d/1ngZNo3-7pmkwSU-na2tYcV15wzFMzmqkaXDWh71j3GM/edit?usp=sharing) for more information about processing.
+
+See our [UNHCR Datathon Variables processing](https://docs.google.com/spreadsheets/d/1ngZNo3-7pmkwSU-na2tYcV15wzFMzmqkaXDWh71j3GM/edit?usp=sharing) for more information about our process.
+
 # Methodology
 
 ## Multi-dimensional deprivation index
-The multi-dimensional deprivation index (MDDI) is a composite score of vulnerability or deprivation.
+The multi-dimensional deprivation index (MDDI, see [WFP](https://github.com/WFP-VAM/RAMResourcesScripts/blob/main/Indicators/Multidimensional-deprivation-index/MDDI-indicator.do)) is a composite score of vulnerability or deprivation.
 In this study, the six dimensions deemed critical for South Sudan refugees and the South Sudan host community are considered: food security, education, health, living standards (shelter and wash) and Safe.
 
 | Dimension     | Dimension Weight | Indicator                                                                                                                  | Indicator Weight |
@@ -61,7 +63,7 @@ A household is considered sever deprived in any one dimension for which at least
 │   ├── 01_input/           # Original FDS 2023 datasets
 │   ├── 02_output/          # Indicators computed
 ├── 01_scripts/
-│   ├── fds-analysis.R/          # use h
+│   ├── fds-analysis.R/          # use this to generate all reports
 │   ├── S_Sudan_FDS_MDDI.Rmd/           # multi-dimensional deprivation index script
 │   ├── S_Sudan_FDS_Socio_Economic_Profile.Rmd/           # socio economic profile script
 ├── 02_reports/             # all reports generated are in this folder
