@@ -69,6 +69,16 @@ A household is considered sever deprived in any one dimension for which at least
 ├── 02_reports/             # all reports generated are in this folder
 
 ```
+
+## Authors
+
+[Aboubacar HEMA]()
+
+Brahima TOU
+
+Khadidiatou COULIBALY
+
+Yannick Bryan NGONO FONE
  
 ## References
 
