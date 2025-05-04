@@ -8,7 +8,7 @@ Food insecurity is widespread, affecting 94% of refugees and 93% of host househo
 
 To address these challenges, integrated interventions are recommended. These include expanding food assistance and livelihood programs to address food insecurity (SDG 2); improving school access and incentives, especially for host communities (SDG 4); strengthening healthcare services and disability support (SDG 3); investing in clean energy technologies like cookstoves and solar kits (SDG 7); scaling up WASH infrastructure to improve sanitation and water access (SDG 6); developing affordable housing and urban planning strategies (SDG 11); and enhancing protection services and community-based safety initiatives (SDG 16).
 
-For more information, please read the (report)[https://kcgu.my.canva.site/d4d-document] and (presentation)[https://kcgu.my.canva.site/d4d-document].
+For more information, please read the [report](https://kcgu.my.canva.site/d4d-document) and [presentation](https://kcgu.my.canva.site/d4d-document).
 
 # Methodology
 
