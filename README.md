@@ -43,6 +43,19 @@ A household is considered deprived in any one dimension for which at least 50% o
 1. Percentages shown; significance tested using **Pearson's Chi-squared test**.  
 2. MDDI score compared using **Wilcoxon rank-sum test**; values reported as **Mean (Minimum, Maximum)**.
 
+# Summary
+
+The multi-dimensional deprivation index highlights significant disparities between refugee and host community households in northern South Sudan. Contrary to common assumptions, host households show higher overall (83%) and severe (47%) deprivation compared to refugees (70% and 27%, respectively). Average MDDI scores also reflect greater intensity of deprivation among host communities (0.48 vs. 0.40).
+Food insecurity is widespread, affecting 94% of refugees and 93% of host households, while refugees more frequently adopt severe coping strategies (79% vs. 65%). Access to education is notably worse among host communities, with 60% reporting children not attending school (vs. 25% of refugees). Health vulnerabilities are more common among refugees (42% vs. 31%), highlighting the need for targeted support. Both populations face critical energy access issues for cooking and lighting. Sanitation gaps are severe among host communities—78% lack improved toilet facilities and 12% lack safe drinking water. Overcrowded housing is also more common among host households (52% vs. 45%). Protection concerns are prevalent in both groups, though not statistically different (22% refugees vs. 20% hosts).
+To address these challenges, integrated interventions are recommended:
+•	Expand food assistance and livelihood programs (SDG 2)
+•	Improve school access and incentives, especially for host communities (SDG 4)
+•	Strengthening healthcare services and disability support (SDG 3)
+•	Invest in clean energy technologies like cookstoves and solar kits (SDG 7)
+•	Scale up WASH infrastructure to improve sanitation and water access (SDG 6)
+•	Develop affordable housing and urban planning strategies (SDG 11)
+•	Enhance protection services and community-based safety initiatives (SDG 16)
+
 
 ## Repository Structure
 ```
