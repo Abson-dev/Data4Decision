@@ -1,0 +1,597 @@
+---
+title: "The multi-dimensional deprivation index (MDDI)"
+author: "Data4Decision team - data source : Forced Displacement Survey 2023- South Sudan"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+always_allow_html: yes
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{float}
+  - \usepackage{color}
+  - \usepackage{longtable}
+  - \usepackage{multirow}
+output: 
+  # prettydoc::html_pretty:
+  #    theme: cayman
+  officedown::rdocx_document:
+    tables:
+      style: Table
+      layout: autofit
+      width: 1
+      topcaption: true
+      tab.lp: 'tab:'
+      caption:
+        style: Table Caption
+        pre: 'Tab '
+        sep: ': '
+        tnd: 0
+        tns: '-'
+        fp_text: !expr officer::fp_text_lite(bold = TRUE)
+      conditional:
+        first_row: true
+        first_column: false
+        last_row: false
+        last_column: false
+        no_hband: false
+        no_vband: true
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+    theme: lumen
+  pdf_document:
+    keep_tex: no
+  word_document:
+    fig_width: 6.5
+    fig_height: 3.5
+    fig_caption: true
+#html_notebook: default
+---
+  
+\newpage
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(haven)
+UNHCR_SSD_2023_FDS_data_main <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta")
+#View(UNHCR_SSD_2023_FDS_data_main)
+library(haven)
+UNHCR_SSD_2023_FDS_data_member <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_member.dta")
+
+UNHCR_SSD_2023_FDS_data_caregiver <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_caregiver.dta")
+#View(UNHCR_SSD_2023_FDS_data_member)
+
+UNHCR_SSD_2023_FDS_data_woman <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_woman.dta")
+
+UNHCR_SSD_2023_FDS_data_roster <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta")
+data = UNHCR_SSD_2023_FDS_data_main %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_member, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_caregiver, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_woman, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_roster %>% dplyr::filter(HH_03==1), by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>%
+  mutate(across(where(is.numeric),  ~ na_if(.x, 998))) %>%
+  labelled::to_factor()
+
+data$ageYears <- as.numeric(data$ageYears)
+
+
+data$Intro_07_1 <- droplevels(data$Intro_07_1)
+```
+
+
+## Food Consumption Score (FCS)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data = data %>% 
+  dplyr::mutate(
+    FCSStap=Food_div1,
+    FCSPulse=Food_div2,
+    FCSDairy=Food_div3,
+    FCSPr=Food_div4,
+    FCSVeg=Food_div5,
+    FCSFruit=Food_div6,
+    FCSFruitOrg=Food_div61,
+    FCSFat=Food_div7,
+    FCSSugar=Food_div8,
+    FCSCond=Food_div9
+  )
+
+
+
+# Label relevant FCS variables ------------------------------------------------# 
+
+var_label(data$FCSStap)   <- "Consumption over the past 7 days: cereals, grains and tubers"
+var_label(data$FCSPulse)  <- "Consumption over the past 7 days: pulses"
+var_label(data$FCSDairy)  <- "Consumption over the past 7 days: dairy products"
+var_label(data$FCSPr)     <- "Consumption over the past 7 days: meat, fish and eggs"
+var_label(data$FCSVeg)    <- "Consumption over the past 7 days: vegetables"
+var_label(data$FCSFruit)  <- "Consumption over the past 7 days: fruit"
+var_label(data$FCSFat)    <- "Consumption over the past 7 days: fat and oil"
+var_label(data$FCSSugar)  <- "Consumption over the past 7 days: sugar or sweets:"
+var_label(data$FCSCond)   <- "Consumption over the past 7 days: condiments or spices"
+
+# Calculate FCS ---------------------------------------------------------------# 
+data <- data %>% mutate(FCS = (FCSStap  * 2)   + 
+                              (FCSPulse * 3)   +
+                              (FCSPr    * 4)   +
+                              (FCSDairy * 4)   + 
+                               FCSVeg          +
+                               FCSFruit        +
+                              (FCSFat   * 0.5) +
+                              (FCSSugar * 0.5))
+var_label(data$FCS) <- "Food Consumption Score"
+data <- data %>% mutate(FCSCat21 = case_when(
+                             FCS <= 21 ~ 1,
+                             between(FCS, 21.5, 35) ~ 2, 
+                             FCS > 35 ~ 3),
+                        FCSCat28 = case_when(
+                             FCS <= 28 ~ 1, 
+                             between(FCS, 28.5, 42) ~ 2, 
+                             FCS > 42 ~ 3))
+
+val_lab(data$FCSCat21) = num_lab("
+             1 Poor
+             2 Borderline
+             3 Acceptable
+                                 ")
+var_label(data$FCSCat21) <- "FCS Categories: 21/35 thresholds"
+
+val_lab(data$FCSCat28) = num_lab("
+             1 Poor
+             2 Borderline
+             3 Acceptable
+                                 ")
+var_label(data$FCSCat28) <- "FCS Categories: 28/42 thresholds"
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("FCS",
+               "FCSCat21",
+               "FCSCat28"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+# Livelihood coping stategies index
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data = data %>% 
+  dplyr::mutate(
+    LhCSIStress1= ifelse(Food10_1p=="to buy food",1,0),
+    LhCSIStress2= ifelse(Food10_1h=="to buy food",1,0),
+    LhCSIStress3= ifelse(Food10_1z=="to buy food",1,0),
+    LhCSIStress4= ifelse(Food10_1k=="to buy food",1,0),
+    LhCSICrisis1= ifelse(Food10_1g=="to buy food",1,0),
+    LhCSICrisis2= ifelse(Food10_1i=="to buy food",1,0),
+    LhCSICrisis3= ifelse(Food10_1m=="to buy food",1,ifelse(Food10_1l=="to buy food",1,0)),
+    LhCSIEmergency1= ifelse(Food10_1q=="to buy food",1,0),
+    LhCSIEmergency2= ifelse(Food10_1b=="to buy food",1,0),
+    LhCSIEmergency3= ifelse(Food10_1n=="to buy food",1,ifelse(Food10_1c=="to buy food",1,0))
+    
+
+)
+
+#stress
+data <- data %>% mutate(stress_coping_FS = case_when(
+  LhCSIStress1 == 1 ~ 1,
+  LhCSIStress2 == 1 ~ 1,
+  LhCSIStress3 == 1 ~ 1,
+  LhCSIStress4 == 1 ~1,
+  TRUE ~ 0))
+var_label(data$stress_coping_FS) <- "Did the HH engage in stress coping strategies"
+#Crisis
+data <- data %>% mutate(crisis_coping_FS = case_when(
+  LhCSICrisis1 == 1 ~ 1,
+  LhCSICrisis2 == 1 ~ 1,
+  LhCSICrisis3 == 1 ~ 1,
+  TRUE ~ 0))
+var_label(data$crisis_coping_FS) <- "Did the HH engage in crisis coping strategies"
+#Emergency
+data <- data %>% mutate(emergency_coping_FS = case_when(
+  LhCSIEmergency1 == 1 ~ 1,
+  LhCSIEmergency2 == 1 ~ 1,
+  LhCSIEmergency3 == 1 ~ 1,
+  TRUE ~ 0))
+var_label(data$emergency_coping_FS) <- "Did the HH engage in emergency coping strategies"
+
+#calculate Max_coping_behaviour
+data <- data %>% mutate(Max_coping_behaviourFS = case_when(
+  is.na(emergency_coping_FS) & is.na(crisis_coping_FS) & is.na(stress_coping_FS) ~ NA_real_,
+  emergency_coping_FS == 1 ~ 4,
+  crisis_coping_FS == 1 ~ 3,
+  stress_coping_FS == 1 ~ 2,
+  TRUE ~ 1))
+var_label(data$Max_coping_behaviourFS) <- "Summary of asset depletion"
+val_lab(data$Max_coping_behaviourFS) = num_lab("
+             1 HH not adopting coping strategies
+             2 Stress coping strategies
+             3 Crisis coping strategies
+             4 Emergencies coping strategies
+")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("Max_coping_behaviourFS"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Reduced Consumption Strategies Index (rCSI)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data <- data %>% mutate(
+  rCSILessQlty= ifelse(Food02a=="yes",4,0),
+  rCSIBorrow= ifelse(Food05a=="yes",4,0),
+  rCSIMealNb= ifelse(Food08a=="yes",4,0),
+  rCSIMealSize= ifelse(Food06a=="yes",4,0),
+  rCSIMealAdult= ifelse(Food07a=="yes",4,0)
+
+)
+
+
+# Label rCSI relevant variables -----------------------------------------------#
+
+var_label(data$rCSILessQlty)  <- "Relied on less preferred and less expensive food"
+var_label(data$rCSIBorrow)    <- "Borrowed food or relied on help from a relative or friend"
+var_label(data$rCSIMealNb)    <- "Reduce number of meals eaten in a day"
+var_label(data$rCSIMealSize)  <- "Limit portion size of meals at meal times"
+var_label(data$rCSIMealAdult) <- "Restricted consumption by adults for small children to eat"
+
+# Calculate rCSI --------------------------------------------------------------# 
+
+data <- data %>% mutate(rCSI = as.numeric(rCSILessQlty) + 
+                              (as.numeric(rCSIBorrow * 2)) + 
+                               as.numeric(rCSIMealNb) + 
+                               as.numeric(rCSIMealSize) + 
+                              (as.numeric(rCSIMealAdult * 3)))
+
+data$rCSI <- as.numeric(data$rCSI)
+var_label(data$rCSI)          <- "Reduced coping strategies index (rCSI)"
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("rCSI"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                       type = list(rCSI ~ "continuous"),
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+# Multi-dimensional deprivation index (MDDI) is a composite score of poverty or deprivation
+
+## FOOD DIMENSION
+
+### Food Consumption Score
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with unacceptable food consumption
+data = data %>% 
+  dplyr::mutate(MDDI_food1 = ifelse(!is.na(FCSCat28) & (FCSCat28==1 | FCSCat28==2),1,0))
+
+var_label(data$MDDI_food1)   <- "HH with unacceptable food consumption"
+```
+
+
+
+### Reduced Consumption Strategies Index
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with high level of consumption coping strategies
+data = data %>% 
+  dplyr::mutate(MDDI_food2 = ifelse(!is.na(rCSI) & rCSI>18,1,0))
+
+var_label(data$MDDI_food2)   <- "HH with high level of consumption coping strategies"
+```
+
+
+
+## EDUCATION DIMENSION
+
+### At least one school age children (6-17) (adjust to country context) not attending school in the last 6 months
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with at least one school-age children not attending school
+UNHCR_SSD_2023_FDS_data_roster = UNHCR_SSD_2023_FDS_data_roster %>%
+  dplyr::mutate(HHNoSchool = ifelse((ageYears>=6 & ageYears<=17) & !is.na(HH_Educ06),1,0))
+
+df = UNHCR_SSD_2023_FDS_data_roster %>% 
+  dplyr::group_by(ID) %>% 
+  dplyr::mutate(HHNoSchoolNum = sum(HHNoSchool,na.rm = T)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(MDDI_edu1 = ifelse(HHNoSchoolNum>0,1,0)) %>% 
+  dplyr::select(ID,MDDI_edu1) %>% 
+  dplyr::distinct()
+
+data = data %>% 
+  dplyr::left_join(df,by="ID")
+
+var_label(data$MDDI_edu1)   <- "HH with at least one school-age children not attending school"
+```
+
+
+## HEALTH DIMENSION
+
+### Medical treatment - Did household members being chronically or acutely ill receive medical attention while sick?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with at least one member did not receive medical treatment while sick
+
+```
+
+### Number of sick or disabled people > 1 or >50% of household members
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with more than half members or more than one member sick or disabled
+data = data %>% 
+  dplyr::mutate(
+    dis_sum = rowSums(across(c(Dis_01, Dis_04, Dis_07, Dis_10, Dis_13, Dis_16), ~ .x == 1)),
+ MDDI_health2 = ifelse(dis_sum>=1,1,0))
+
+var_label(data$MDDI_health2)   <- "HH with more than half members or more than one member sick or disabled"
+```
+
+
+## SHELTER DIMENSION
+
+### Source of energy for cooking - HH uses solid fuels for cooking
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with no improved energy source for cooking
+data = data %>% 
+  dplyr::mutate(MDDI_shelter1 = ifelse(!is.na(HC02) & (HC02 == "traditional solid fuel stove (non-manufactured)"| HC02 == "three stone stove / open fire" | HC02 == "Build stove with bricks and/or mud"),1,0))
+
+var_label(data$MDDI_shelter1)   <- "HH with no improved energy source for cooking"
+```
+
+### Source of energy for lighting - HH has no electricity
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with not improved source of energy for lighting
+data = data %>% 
+  dplyr::mutate(MDDI_shelter2 = ifelse(!is.na(HL01) & HL01 == "no",1,0))
+
+var_label(data$MDDI_shelter2)   <- "HH with not improved source of energy for lighting"
+```
+
+
+### Crowding Index - (Number of HH members/Number of rooms (excluding kitchen, corridors))>3
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with at least 3 HH members sharing one room to sleep
+
+df = UNHCR_SSD_2023_FDS_data_roster %>% 
+  dplyr::group_by(ID) %>% 
+  dplyr::mutate(HHSize = n()) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(ID,HHSize) %>% 
+  dplyr::distinct()
+data = data %>% 
+  dplyr::left_join(df,by="ID")
+data = data %>% 
+  dplyr::mutate(crowding=HHSize/HH14,
+                MDDI_shelter3 = ifelse(crowding>3,1,0))
+
+var_label(data$MDDI_shelter3)   <- "HH with at least 3 HH members sharing one room to sleep"
+```
+
+
+
+
+## WASH DIMENSION
+
+### Toilet Type (not-improved facility)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with not improved toilet facility
+data = data %>% 
+  dplyr::mutate(MDDI_wash1 = ifelse(!is.na(SAN01) & SAN01 == "no facility / bush / field",1,0))
+
+var_label(data$MDDI_wash1)   <- "HH with not improved toilet facility"
+```
+
+
+### Water source (not-improved source)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with not improved drinking water source
+data = data %>% 
+  dplyr::mutate(MDDI_wash2 = ifelse(!is.na(BD01) & (BD01 == "unprotected well"| BD01 == "unprotected spring" | BD01 == "surface water (river, dam, lake, pond, stream, canal, irrigation channel)"),1,0))
+
+var_label(data$MDDI_wash2)   <- "HH with not improved drinking water source"
+```
+
+
+
+## SAFETY DIMENSION
+
+### Safety: HH felt unsafe or suffered violence
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH with one or more members who felt unsafe or suffered violence
+data = data %>% 
+  dplyr::mutate(MDDI_safety1 = ifelse(!is.na(HH20) & HH20 == "never feel safe",1,0))
+
+var_label(data$MDDI_safety1)   <- "HH with one or more members who felt unsafe or suffered violence"
+```
+
+
+### Displaced by forced in the last 12 months
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#HH displaced by force in the last 12 months
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = data %>% 
+  dplyr::select(gtsummary::starts_with("MDDI")) %>% 
+  names()
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Calculate deprivation score of each dimension
+
+For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight. Summed together, each household gets a score out of 1, where any value greater than or equal to 0.3 equates to ‘multidimensional poverty’, i.e. deprivation across multiple sectors (‘MD Poor’).
+
+A household is considered deprived in any one dimension for which at least 50% of the indicators are coded as positive answers.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data <- data %>%
+  mutate(
+    MDDI_food    = MDDI_food1 * 0.5 + MDDI_food2 * 0.5,
+    MDDI_edu     = MDDI_edu1 * 1,
+    MDDI_health  =  MDDI_health2 * 1,
+    MDDI_shelter = MDDI_shelter1 * 1/3 + 
+                   MDDI_shelter2 * 1/3 + 
+                   MDDI_shelter3 * 1/3,
+    MDDI_wash    = MDDI_wash1 * 0.5 + 
+                   MDDI_wash2 * 0.5,
+    MDDI_safety  = MDDI_safety1 * 1
+  )
+
+var_label(data$MDDI_food)    <- "Deprivation score for food dimension"
+var_label(data$MDDI_edu)     <- "Deprivation score for education dimension"
+var_label(data$MDDI_health)  <- "Deprivation score for health dimension"
+var_label(data$MDDI_shelter) <- "Deprivation score for shelter dimension"
+var_label(data$MDDI_wash)    <- "Deprivation score for WASH dimension"
+var_label(data$MDDI_safety)  <- "Deprivation score for safety and displacement dimension"
+
+data <- data %>%
+  mutate(
+    MDDI = (MDDI_food + MDDI_edu + MDDI_health + MDDI_shelter + MDDI_wash + MDDI_safety) / 6
+  )
+
+var_label(data$MDDI) <- "MDDI score"
+
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+var_needed = c("MDDI_food", "MDDI_edu", "MDDI_health", "MDDI_shelter", "MDDI_wash", "MDDI_safety","MDDI")
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Calculate MDDI Incidence
+data <- data %>%
+  mutate(
+    MDDI_poor_severe = ifelse(MDDI >= 0.50,1,0)
+  )
+
+var_label(data$MDDI_poor_severe) <- "MDDI Incidence – severe deprivation"
+
+data <- data %>%
+  mutate(
+    MDDI_poor = ifelse(MDDI >= 0.3,1,0)
+  )
+
+var_label(data$MDDI_poor) <- "MDDI Incidence"
+
+# Apply labels to variables
+data <- data %>%
+  mutate(
+    MDDI_poor_severe = factor(MDDI_poor_severe, levels = c(0, 1), labels = c("HH is not deprived", "HH is deprived")),
+    MDDI_poor = factor(MDDI_poor, levels = c(0, 1), labels = c("HH is not deprived", "HH is deprived"))
+  )
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Calculate the Average MDDI Intensity
+data <- data %>%
+  mutate(
+    MDDI_intensity = ifelse(MDDI_poor == "HH is deprived", MDDI, 0)
+  )
+
+var_label(data$MDDI_intensity) <- "Average MDDI Intensity"
+
+#Calculate Combined MDDI
+data <- data %>%
+  mutate(
+    MDDI_combined = case_when(
+      MDDI_poor == "HH is deprived" ~ 1 * MDDI_intensity,
+      MDDI_poor == "HH is not deprived" ~ 0,
+      TRUE ~ NA_real_  # Preserve NA for missing MDDI_poor
+    )
+  )
+
+var_label(data$MDDI_combined) <- "Combined MDDI"
+
+```
+
+# Calculate MDDI-related measures
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("MDDI_poor", "MDDI_poor_severe", "MDDI")
+var_label(data$MDDI_poor) <- "MDDI Incidence (thresholds =  0.33)"
+var_label(data$MDDI_poor_severe) <- "MDDI Incidence – severe deprivation (thresholds =  0.50)"
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "MDDI")
+```
+
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+data = data %>% 
+  dplyr::mutate(mddi_edu_1 = ifelse(HH_Educ07==2 & (ageYears<18 | ageYears>=6),1,0), #Not all school age children (6-17) attending school
+                mddi_edu_2 = ifelse(HH_Educ16==3 & (ageYears<18 | ageYears>=6),1,0), #education interruption:High costs
+             mddi_health_1= ifelse(MN01==2,1,0),
+             mddi_health_2 = ifelse(H29==1,1,0),
+             mddi_food_1 = ifelse(Food00==1,1,0),
+             mddi_food_2 = ifelse(Food11a==1,1,0)) 
+
+```
+
+
