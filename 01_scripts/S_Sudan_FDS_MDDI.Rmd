@@ -60,7 +60,7 @@ UNHCR_SSD_2023_FDS_data_main <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS
 UNHCR_SSD_2023_FDS_data_roster <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta") %>%
    labelled::to_factor()
 data = UNHCR_SSD_2023_FDS_data_main
-#data$ageYears <- as.numeric(data$ageYears)
+
 
 
 data$Intro_07_1 <- droplevels(data$Intro_07_1)
@@ -245,19 +245,18 @@ var_label(data$rCSIMealAdult) <- "Restricted consumption by adults for small chi
 
 # Calculate rCSI --------------------------------------------------------------# 
 
-data <- data %>% mutate(rCSI = as.numeric(rCSILessQlty) + 
-                              (as.numeric(rCSIBorrow * 2)) + 
-                               as.numeric(rCSIMealNb) + 
-                               as.numeric(rCSIMealSize) + 
-                              (as.numeric(rCSIMealAdult * 3)))
+data <- data %>% mutate(rCSI = rCSILessQlty + 
+                              rCSIBorrow * 2 + 
+                              rCSIMealNb + 
+                              rCSIMealSize + 
+                              rCSIMealAdult * 3)
 
 data$rCSI <- as.numeric(data$rCSI)
 var_label(data$rCSI)          <- "Reduced coping strategies index (rCSI)"
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-var_needed = c("rCSI"
-)
+var_needed = c("rCSI")
 gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
 data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
 gtsummary::tbl_summary(by = Intro_07_1,
@@ -304,6 +303,7 @@ var_label(data$MDDI_food2)   <- "HH with high level of consumption coping strate
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 #HH with at least one school-age children not attending school
+UNHCR_SSD_2023_FDS_data_roster$ageYears <- as.numeric(UNHCR_SSD_2023_FDS_data_roster$ageYears)
 UNHCR_SSD_2023_FDS_data_roster = UNHCR_SSD_2023_FDS_data_roster %>%
   dplyr::mutate(HHNoSchool = ifelse((ageYears>=6 & ageYears<=17) & !is.na(HH_Educ06),1,0))
 
@@ -471,12 +471,21 @@ data <- data %>%
     MDDI_safety  = MDDI_safety1 * 1
   )
 
+data$MDDI_food <- as.numeric(data$MDDI_food)
+data$MDDI_edu <- as.numeric(data$MDDI_edu)
+data$MDDI_health <- as.numeric(data$MDDI_health)
+data$MDDI_shelter <- as.numeric(data$MDDI_shelter)
+data$MDDI_wash <- as.numeric(data$MDDI_wash)
+data$MDDI_safety <- as.numeric(data$MDDI_safety)
+
 var_label(data$MDDI_food)    <- "Deprivation score for food dimension"
 var_label(data$MDDI_edu)     <- "Deprivation score for education dimension"
 var_label(data$MDDI_health)  <- "Deprivation score for health dimension"
 var_label(data$MDDI_shelter) <- "Deprivation score for shelter dimension"
 var_label(data$MDDI_wash)    <- "Deprivation score for WASH dimension"
 var_label(data$MDDI_safety)  <- "Deprivation score for safety and displacement dimension"
+
+
 
 data <- data %>%
   mutate(
