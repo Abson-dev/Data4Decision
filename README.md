@@ -1,9 +1,10 @@
 # Data4Decision
 
-The multi-dimensional deprivation index (MDDI) is a composite score of vulnerability or deprivation.
-In this study, the five dimensions deemed critical for South Sudan refugees and the South Sudan host community are considered: food security, education, health, living standards (shelter and wash) and Safe.
+# Methodology
 
-## Multidimensional Needs Assessment Indicators
+## Multi-dimensional deprivation index
+The multi-dimensional deprivation index (MDDI) is a composite score of vulnerability or deprivation.
+In this study, the six dimensions deemed critical for South Sudan refugees and the South Sudan host community are considered: food security, education, health, living standards (shelter and wash) and Safe.
 
 | Dimension     | Dimension Weight | Indicator                                                                                                                  | Indicator Weight |
 |---------------|------------------|-----------------------------------------------------------------------------------------------------------------------------|------------------|
@@ -19,7 +20,10 @@ In this study, the five dimensions deemed critical for South Sudan refugees and 
 | Safety        | 1/6              | HH with one or more members who felt unsafe or suffered violence                                                           | 1                |
 
 
-For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight. Summed together, each household gets a score out of 1, where any value greater than or equal to 0.3 equates to ‘multidimensional poverty’, i.e. deprivation across multiple sectors (‘MD Poor’).
+For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight.
+MDDI Incidence (thresholds = 0.33)
+MDDI Incidence – severe deprivation (thresholds = 0.50)
+Summed together, each household gets a score out of 1, where any value greater than or equal to 0.33 equates to **multidimensional vulnerable**, i.e. deprivation/vulnerable across multiple sectors (‘MD Poor’).
 A household is considered deprived in any one dimension for which at least 50% of the indicators are coded as positive answers.
 
 ## Repository Structure
@@ -28,10 +32,10 @@ A household is considered deprived in any one dimension for which at least 50% o
 │   ├── 01_input/           # Original FDS 2023 datasets
 │   ├── 02_output/          # Indicators computed
 ├── 01_scripts/
-│   ├── fds-analysis.R/          # Cleaned datasets
-│   ├── S_Sudan_FDS_MDDI.Rmd/           # Spatial Images
-│   ├── S_Sudan_FDS_Socio_Economic_Profile.Rmd/           # Spatial Images
-├── 02_reports/             # Papers
+│   ├── fds-analysis.R/          # use h
+│   ├── S_Sudan_FDS_MDDI.Rmd/           # multi-dimensional deprivation index script
+│   ├── S_Sudan_FDS_Socio_Economic_Profile.Rmd/           # socio economic profile script
+├── 02_reports/             # all reports generated are in this folder
 
 ```
  
