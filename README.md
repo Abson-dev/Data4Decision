@@ -11,9 +11,9 @@ In this study, the five dimensions deemed critical for South Sudan refugees and 
 | Health        | 1/6              | HH with more than half members or more than one member sick                                                                | 1                |
 | Food security | 1/6              | HH with unacceptable food consumption (FCS: poor or borderline)                                                            | 0.5              |
 | Food security |                  | HH with high level of consumption coping strategies (RCSI > 18)                                                            | 0.5              |
-| Shelter       | 1/6              | HH with no improved energy source for cooking (uses solid fuels)                                                           | 0.3              |
-| Shelter       |                  | HH with not improved source of energy for lighting (no electricity)                                                        | 0.3              |
-| Shelter       |                  | HH with at least 3 HH members sharing one room to sleep           | 0.3              |
+| Shelter       | 1/6              | HH with no improved energy source for cooking (uses solid fuels)                                                           | 1/3              |
+| Shelter       |                  | HH with not improved source of energy for lighting (no electricity)                                                        | 1/3              |
+| Shelter       |                  | HH with at least 3 HH members sharing one room to sleep           | 1/3              |
 | Wash          | 1/6              | HH with not improved toilet facility                                                                                       | 0.5              |
 | Wash          |                  | HH with not improved drinking water source                                                                                 | 0.5              |
 | Safety        | 1/6              | HH with one or more members who felt unsafe or suffered violence                                                           | 1                |
