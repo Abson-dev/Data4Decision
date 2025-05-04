@@ -53,17 +53,17 @@ output:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(haven)
-UNHCR_SSD_2023_FDS_data_main <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta")
+UNHCR_SSD_2023_FDS_data_main <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta")
 #View(UNHCR_SSD_2023_FDS_data_main)
 library(haven)
-UNHCR_SSD_2023_FDS_data_member <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_member.dta")
+UNHCR_SSD_2023_FDS_data_member <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_member.dta")
 
-UNHCR_SSD_2023_FDS_data_caregiver <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_caregiver.dta")
+UNHCR_SSD_2023_FDS_data_caregiver <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_caregiver.dta")
 #View(UNHCR_SSD_2023_FDS_data_member)
 
-UNHCR_SSD_2023_FDS_data_woman <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_woman.dta")
+UNHCR_SSD_2023_FDS_data_woman <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_woman.dta")
 
-UNHCR_SSD_2023_FDS_data_roster <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta")
+UNHCR_SSD_2023_FDS_data_roster <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta")
 data = UNHCR_SSD_2023_FDS_data_main %>% 
   dplyr::left_join(UNHCR_SSD_2023_FDS_data_member, by=c("ID")) %>%
   dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
@@ -141,7 +141,7 @@ apyramid::age_pyramid(
   ylab("# cases") +
   xlab("Age (years)") +
   scale_fill_manual(
-    values = c("#5ce1e6", "#15b3cf"),
+    values = c("#e0fbfc", "#1f4e8c"),
     labels = c("Male", "Female")
   ) +
   labs(fill = "Sex") +
@@ -158,7 +158,7 @@ apyramid::age_pyramid(
   ylab("# cases") +
   xlab("Age (years)") +
   scale_fill_manual(
-    values = c("#15b3cf", "#5ce1e6"),
+    values = c("#1f4e8c", "#e0fbfc"),
     labels = c("Host community North","Refugees")
   ) +
   labs(fill = "Population group") +
@@ -436,12 +436,32 @@ gtsummary::tbl_summary(by = Intro_07_1,
 ## Employment
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-var_needed = c("CL01_1",
+
+var_needed = c("EMP01"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+## Child Labour
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("child_labour",
+  "CL01_1",
 "CL01_2",
 "CL01_3",
 "CL01_4",
 "CL02"
 )
+data = data %>% 
+  dplyr::mutate(child_labour = ifelse(CL01_1 == "yes"| CL01_2 == "yes" | CL01_3 == "yes"| CL01_4 == "yes",1,0))
 gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
 data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
 gtsummary::tbl_summary(by = Intro_07_1,
@@ -538,3 +558,24 @@ gtsummary::tbl_summary(by = Intro_07_1,
   
   modify_header(label ~ "Covariates")
 ```
+
+# Assistance programme
+
+```{r assistance, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("ScProtec1_ScProtec03",
+"ScProtec1_ScProtec04",
+"ScProtec1_ScProtec05",
+"ScProtec1_ScProtec06",
+"ScProtec1_ScProtec07"
+)
+   
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
