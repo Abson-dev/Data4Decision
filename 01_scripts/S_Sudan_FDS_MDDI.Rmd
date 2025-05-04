@@ -587,4 +587,7 @@ data = data %>%
 
 ```
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+haven::write_dta(data,"../00_data/02_output/Indicators.dta")
+```
 
