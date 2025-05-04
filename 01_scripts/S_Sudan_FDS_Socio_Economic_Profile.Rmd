@@ -1,0 +1,540 @@
+---
+title: "Forced Displacement Survey - South Sudan"
+author: "Data4Decision team - data source : Forced Displacement Survey - South Sudan"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+always_allow_html: yes
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{float}
+  - \usepackage{color}
+  - \usepackage{longtable}
+  - \usepackage{multirow}
+output: 
+  # prettydoc::html_pretty:
+  #    theme: cayman
+  officedown::rdocx_document:
+    tables:
+      style: Table
+      layout: autofit
+      width: 1
+      topcaption: true
+      tab.lp: 'tab:'
+      caption:
+        style: Table Caption
+        pre: 'Tab '
+        sep: ': '
+        tnd: 0
+        tns: '-'
+        fp_text: !expr officer::fp_text_lite(bold = TRUE)
+      conditional:
+        first_row: true
+        first_column: false
+        last_row: false
+        last_column: false
+        no_hband: false
+        no_vband: true
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+    theme: lumen
+  pdf_document:
+    keep_tex: no
+  word_document:
+    fig_width: 6.5
+    fig_height: 3.5
+    fig_caption: true
+#html_notebook: default
+---
+  
+\newpage
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(haven)
+UNHCR_SSD_2023_FDS_data_main <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta")
+#View(UNHCR_SSD_2023_FDS_data_main)
+library(haven)
+UNHCR_SSD_2023_FDS_data_member <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_member.dta")
+
+UNHCR_SSD_2023_FDS_data_caregiver <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_caregiver.dta")
+#View(UNHCR_SSD_2023_FDS_data_member)
+
+UNHCR_SSD_2023_FDS_data_woman <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_woman.dta")
+
+UNHCR_SSD_2023_FDS_data_roster <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta")
+data = UNHCR_SSD_2023_FDS_data_main %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_member, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_caregiver, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_woman, by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
+  dplyr::left_join(UNHCR_SSD_2023_FDS_data_roster %>% dplyr::filter(HH_03==1), by=c("ID")) %>%
+  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>%
+  mutate(across(where(is.numeric),  ~ na_if(.x, 998))) %>%
+  labelled::to_factor()
+
+data$ageYears <- as.numeric(data$ageYears)
+
+
+data$Intro_07_1 <- droplevels(data$Intro_07_1)
+```
+
+
+# Legal status and displacement history
+
+
+
+```{r nationality, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("ID_00",
+"Legal_16",
+"HH_07b",
+"HH_00b_year_random",
+"DH_13",
+"DH_31a",
+"DH_31b",
+"DH_31c"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+# Demographics
+
+```{r age_pyramid, echo=FALSE, fig.height=6, fig.show='asis', fig.width=12, message=FALSE, warning=FALSE, cache=FALSE, results='asis'}
+# Function to create age groups
+autocut_all <- function(x) {
+  cut(
+    x,
+    breaks = c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, Inf),
+    right = FALSE,
+    include.highest = TRUE
+  )
+}
+# Ensure dataset is a data.table
+setDT(UNHCR_SSD_2023_FDS_data_roster)
+
+# Ensure age is numeric
+UNHCR_SSD_2023_FDS_data_roster[, ageYears := as.numeric(as.character(ageYears))]
+
+# Create age group
+
+UNHCR_SSD_2023_FDS_data_roster <- UNHCR_SSD_2023_FDS_data_roster[, age_group := autocut_all(ageYears)]
+
+UNHCR_SSD_2023_FDS_data_roster[, age_group := as.factor(age_group )]
+UNHCR_SSD_2023_FDS_data_roster[, HH_02 := as.factor(HH_02)]
+# Plot pyramid
+apyramid::age_pyramid(
+  data = UNHCR_SSD_2023_FDS_data_roster[!is.na(age_group) & HH_02 != ""],
+  age_group = age_group,
+  split_by = HH_02
+) +
+  ylab("# cases") +
+  xlab("Age (years)") +
+  scale_fill_manual(
+    values = c("#5ce1e6", "#15b3cf"),
+    labels = c("Male", "Female")
+  ) +
+  labs(fill = "Sex") +
+  theme_classic()
+```
+
+```{r individual_characteristics, echo=FALSE, fig.height=6, fig.show='asis', fig.width=12, message=FALSE, warning=FALSE, cache=FALSE, results='asis'}
+apyramid::age_pyramid(
+  data = UNHCR_SSD_2023_FDS_data_roster[!is.na(age_group) & HH_02 != "" & !is.na(Intro_07_1)],
+  age_group = age_group,
+  split_by = HH_02,
+  stack_by = Intro_07_1
+) +
+  ylab("# cases") +
+  xlab("Age (years)") +
+  scale_fill_manual(
+    values = c("#15b3cf", "#5ce1e6"),
+    labels = c("Host community North","Refugees")
+  ) +
+  labs(fill = "Population group") +
+  theme_classic()
+```
+
+
+```{r householdHead_characteristics, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("ageYears",
+               "HH_02",
+               "HH_08",
+               "HH_09",
+               "HH_21",
+               "HH_25"
+               #"Intro_08"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data$HH_09 = as.numeric(data$HH_09)
+Hmisc::label(data$HH_09) <- "Age of first married/formed a non-formal union"
+data %>%  dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>%
+  gtsummary::tbl_summary(by = Intro_07_1,
+                         statistic = list(all_categorical() ~ "{p}",
+                                          all_continuous() ~ "{mean}({min},{max})"),
+                         missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Household head characteristics")
+```
+
+
+
+
+
+
+# Social environment
+
+
+```{r mobility, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("MovFree01b",
+"HH20",
+"AS01_1",
+"AS01_2",
+"AS01_3a",
+"AS01_3b",
+"AS01_4",
+"AS01_5"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+# Basic needs
+
+## Water, sanitation, and hygiene (WASH)
+
+
+```{r drinking_water, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("BD11",
+"HH12",
+"HW6"
+)
+
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Clean energy
+
+
+```{r electricity, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("HC04",
+"HC02"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Shelter
+
+```{r improved_shelter, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("HH01",
+"HH02",
+"HH06"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Health
+
+```{r access_to_health_care, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("H29",
+"MN01",
+"MN02",
+"Dis_01",
+"Dis_04",
+"Dis_07",
+"Dis_10",
+"Dis_13",
+"Dis_16"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+## Maternal and child health
+
+
+```{r skilled_birth_attendance, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c(
+"BA10A",
+"BA10B",
+"BA10D",
+"BA10E",
+"BA10F",
+"BA10G",
+"BA10X",
+"BA6_1",
+"BA17",
+"MV1",
+"MV1a",
+"MV2",
+"MV3",
+"MV4",
+"MV6",
+"MV7",
+"MV8",
+"MV9",
+"MV10",
+"MV11",
+"MV12A",
+"MV12B",
+"MV12C",
+"MV12D",
+"MV12E",
+"MV12F",
+"MV12OT",
+"MV12DK"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+
+## Education
+
+```{r HHschool_completion, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+var_needed = c("HH_Educ06",
+"HH_Educ07",
+"HH_Educ10",
+"HH_Educ15a",
+"HH_Educ15b",
+"HH_Educ16",
+"HH_Educ17",
+"HH_Educ18",
+"HH_Educ23"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+UNHCR_SSD_2023_FDS_data_roster %>% dplyr::filter(HH_03==1) %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Househould head education status")
+```
+
+
+```{r school_completion, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+var_needed = c("HH_Educ06",
+"HH_Educ07",
+"HH_Educ10",
+"HH_Educ15a",
+"HH_Educ15b",
+"HH_Educ16",
+"HH_Educ17",
+"HH_Educ18",
+"HH_Educ23"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+UNHCR_SSD_2023_FDS_data_roster %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Househould members education status")
+```
+
+
+
+## Food and Nutrition
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("Food00",
+"Food03a",
+"Food09a",
+"Food10a",
+"Food11a"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+## Social protection
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("ScProtec01"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+# Livelihoods
+
+## Employment
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("CL01_1",
+"CL01_2",
+"CL01_3",
+"CL01_4",
+"CL02"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+## Financial services
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("FI01",
+"House20D"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+
+## Land and property
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("Land01",
+"Land02"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+
+## Shocks
+
+```{r shocks, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("ExpShock01"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+## Changes to household income
+
+```{r changes, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("CH01a"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
+
+
+## Subjective well-being
+
+```{r swellbeing, echo=FALSE, message=FALSE, warning=FALSE}
+var_needed = c("W02_1",
+"W01_1",
+"W01_2"
+)
+gtsummary::set_gtsummary_theme(gtsummary::theme_gtsummary_compact())
+data %>% dplyr::select(Intro_07_1, dplyr::all_of(var_needed)) %>% 
+gtsummary::tbl_summary(by = Intro_07_1,
+                            statistic = list(all_categorical() ~ "{p}",
+                                             all_continuous() ~ "{mean}({min},{max})"),
+                            missing = "no"   ) %>%   gtsummary::add_p() %>% 
+  
+  modify_header(label ~ "Covariates")
+```
