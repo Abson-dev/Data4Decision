@@ -72,7 +72,7 @@ A household is considered sever deprived in any one dimension for which at least
 
 ## Authors
 
-[Aboubacar HEMA]()
+[Aboubacar HEMA](https://www.ifpri.org/profile/aboubacar-hema/)
 
 Brahima TOU
 
