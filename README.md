@@ -30,16 +30,15 @@ In this study, the six dimensions deemed critical for South Sudan refugees and t
 
 
 For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight.
-MDDI Incidence (thresholds = 0.33)
-MDDI Incidence – severe deprivation (thresholds = 0.50)
-Summed together, each household gets a score out of 1, where any value greater than or equal to 0.33 equates to **multidimensional vulnerable**, i.e. deprivation/vulnerable across multiple sectors (‘MD Poor’).
-A household is considered deprived in any one dimension for which at least 50% of the indicators are coded as positive answers.
+Summed together, each household gets a score out of 1.
+Household gets any value greater than or equal to 0.33 equates to **multidimensional vulnerable**, i.e. deprivation/vulnerable across multiple sectors (**MDDI Poor/Vulnerable**).
+A household is considered sever deprived in any one dimension for which at least 50% of the indicator are coded as positive answers.
 
 ## Multidimensional Deprivation and Disparity Index (MDDI)
 
 | Measure                                        | Refugees (N = 20,681) | Host Community North (N = 9,901) | p-value   |
 |-----------------------------------------------|------------------------|----------------------------------|-----------|
-| **MDDI Incidence (threshold = 0.33)**         |                        |                                  | <0.001¹   |
+| **MDDI Incidence (threshold ≥ 0.33)**         |                        |                                  | <0.001¹   |
 | HH is not deprived                            | 30%                   | 17%                              |           |
 | HH is deprived                                | 70%                   | 83%                              |           |
 | **MDDI Incidence – Severe Deprivation (≥ 0.50)** |                        |                                  | <0.001¹   |
