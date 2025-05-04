@@ -15,7 +15,7 @@ See our [UNHCR Datathon Variables processing](https://docs.google.com/spreadshee
 # Methodology
 
 ## Multi-dimensional deprivation index
-The multi-dimensional deprivation index (MDDI) is a composite score of vulnerability or deprivation.
+The multi-dimensional deprivation index (MDDI, see [WFP](https://github.com/WFP-VAM/RAMResourcesScripts/blob/main/Indicators/Multidimensional-deprivation-index/MDDI-indicator.do)) is a composite score of vulnerability or deprivation.
 In this study, the six dimensions deemed critical for South Sudan refugees and the South Sudan host community are considered: food security, education, health, living standards (shelter and wash) and Safe.
 
 | Dimension     | Dimension Weight | Indicator                                                                                                                  | Indicator Weight |
