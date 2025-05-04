@@ -63,7 +63,7 @@ A household is considered sever deprived in any one dimension for which at least
 │   ├── 01_input/           # Original FDS 2023 datasets
 │   ├── 02_output/          # Indicators computed
 ├── 01_scripts/
-│   ├── fds-analysis.R/          # use h
+│   ├── fds-analysis.R/          # use this to generate all reports
 │   ├── S_Sudan_FDS_MDDI.Rmd/           # multi-dimensional deprivation index script
 │   ├── S_Sudan_FDS_Socio_Economic_Profile.Rmd/           # socio economic profile script
 ├── 02_reports/             # all reports generated are in this folder
