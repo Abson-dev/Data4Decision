@@ -52,31 +52,15 @@ output:
 \newpage
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(haven)
-UNHCR_SSD_2023_FDS_data_main <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta")
+
+UNHCR_SSD_2023_FDS_data_main <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_main.dta") %>%
+   labelled::to_factor()
 #View(UNHCR_SSD_2023_FDS_data_main)
-library(haven)
-UNHCR_SSD_2023_FDS_data_member <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_member.dta")
 
-UNHCR_SSD_2023_FDS_data_caregiver <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_caregiver.dta")
-#View(UNHCR_SSD_2023_FDS_data_member)
-
-UNHCR_SSD_2023_FDS_data_woman <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_woman.dta")
-
-UNHCR_SSD_2023_FDS_data_roster <- read_dta("Datathon data/Forced Displacement Survey - S Sudan/data/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta")
-data = UNHCR_SSD_2023_FDS_data_main %>% 
-  dplyr::left_join(UNHCR_SSD_2023_FDS_data_member, by=c("ID")) %>%
-  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
-  dplyr::left_join(UNHCR_SSD_2023_FDS_data_caregiver, by=c("ID")) %>%
-  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
-  dplyr::left_join(UNHCR_SSD_2023_FDS_data_woman, by=c("ID")) %>%
-  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>% 
-  dplyr::left_join(UNHCR_SSD_2023_FDS_data_roster %>% dplyr::filter(HH_03==1), by=c("ID")) %>%
-  dplyr::rename_with(~ gsub("\\.x$", "", .x)) %>%
-  mutate(across(where(is.numeric),  ~ na_if(.x, 998))) %>%
-  labelled::to_factor()
-
-data$ageYears <- as.numeric(data$ageYears)
+UNHCR_SSD_2023_FDS_data_roster <- read_dta("../00_data/01_input/UNHCR_SSD_2023_FDS_data_v2/UNHCR_SSD_2023_FDS_data_roster.dta") %>%
+   labelled::to_factor()
+data = UNHCR_SSD_2023_FDS_data_main
+#data$ageYears <- as.numeric(data$ageYears)
 
 
 data$Intro_07_1 <- droplevels(data$Intro_07_1)
