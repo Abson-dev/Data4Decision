@@ -1,6 +1,7 @@
 # Data4Decision
 
-
+The multi-dimensional deprivation index (MDDI) is a composite score of vulnerability or deprivation.
+In this study, the five dimensions deemed critical for South Sudan refugees and the South Sudan host community are considered: food security, education, health, living standards (shelter and wash) and Safe.
 
 
 ## Repository Structure
