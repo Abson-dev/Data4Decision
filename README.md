@@ -7,16 +7,16 @@ In this study, the five dimensions deemed critical for South Sudan refugees and 
 
 | Dimension     | Dimension Weight | Indicator                                                                                                                  | Indicator Weight |
 |---------------|------------------|-----------------------------------------------------------------------------------------------------------------------------|------------------|
-| Education     | 0.17             | HH with at least one school-age child not attending school       | 1                |
-| Health        | 0.17             | HH with more than half members or more than one member sick                                                                | 1                |
-| Food security | 0.17             | HH with unacceptable food consumption (FCS: poor or borderline)                                                            | 0.5              |
-| Food security | 0.17             | HH with high level of consumption coping strategies (RCSI > 18)                                                            | 0.5              |
-| Shelter       | 0.17             | HH with no improved energy source for cooking (uses solid fuels)                                                           | 0.3              |
-| Shelter       | 0.17             | HH with not improved source of energy for lighting (no electricity)                                                        | 0.3              |
-| Shelter       | 0.17             | HH with at least 3 HH members sharing one room to sleep           | 0.3              |
-| Wash          | 0.17             | HH with not improved toilet facility                                                                                       | 0.5              |
-| Wash          | 0.17             | HH with not improved drinking water source                                                                                 | 0.5              |
-| Safety        | 0.17             | HH with one or more members who felt unsafe or suffered violence                                                           | 1                |
+| Education     | 1/6              | HH with at least one school-age child not attending school       | 1                |
+| Health        | 1/6              | HH with more than half members or more than one member sick                                                                | 1                |
+| Food security | 1/6              | HH with unacceptable food consumption (FCS: poor or borderline)                                                            | 0.5              |
+| Food security |                  | HH with high level of consumption coping strategies (RCSI > 18)                                                            | 0.5              |
+| Shelter       | 1/6              | HH with no improved energy source for cooking (uses solid fuels)                                                           | 0.3              |
+| Shelter       |                  | HH with not improved source of energy for lighting (no electricity)                                                        | 0.3              |
+| Shelter       |                  | HH with at least 3 HH members sharing one room to sleep           | 0.3              |
+| Wash          | 1/6              | HH with not improved toilet facility                                                                                       | 0.5              |
+| Wash          |                  | HH with not improved drinking water source                                                                                 | 0.5              |
+| Safety        | 1/6              | HH with one or more members who felt unsafe or suffered violence                                                           | 1                |
 
 
 For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight. Summed together, each household gets a score out of 1, where any value greater than or equal to 0.3 equates to ‘multidimensional poverty’, i.e. deprivation across multiple sectors (‘MD Poor’).
