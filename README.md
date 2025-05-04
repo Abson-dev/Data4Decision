@@ -19,6 +19,9 @@ In this study, the five dimensions deemed critical for South Sudan refugees and 
 | Safety        | 0.17             | HH with one or more members who felt unsafe or suffered violence                                                           | 1                |
 
 
+For each indicator, a positive answer was coded as 1 and a negative answer as 0. Each answer was then multiplied by the indicator weight. Summed together, each household gets a score out of 1, where any value greater than or equal to 0.3 equates to ‘multidimensional poverty’, i.e. deprivation across multiple sectors (‘MD Poor’).
+A household is considered deprived in any one dimension for which at least 50% of the indicators are coded as positive answers.
+
 ## Repository Structure
 ```
 ├── 00_data/
