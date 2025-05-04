@@ -37,7 +37,7 @@ A household is considered sever deprived in any one dimension for which at least
 
 ## Multi-dimensional deprivation index (FDS South Sudan, 2023)
 
-| Measure                                        | Refugees (N = 20,681) | Host Community North (N = 9,901) | p-value   |
+| Measure                                        | Refugees (N = 2,068) | Host Community North (N = 990) | p-value   |
 |-----------------------------------------------|------------------------|----------------------------------|-----------|
 | **MDDI Incidence (threshold ≥ 0.33)**         |                        |                                  | <0.001¹   |
 | HH is not deprived                            | 30%                   | 17%                              |           |
