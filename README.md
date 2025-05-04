@@ -8,6 +8,7 @@ Food insecurity is widespread, affecting 94% of refugees and 93% of host househo
 
 To address these challenges, integrated interventions are recommended. These include expanding food assistance and livelihood programs to address food insecurity (SDG 2); improving school access and incentives, especially for host communities (SDG 4); strengthening healthcare services and disability support (SDG 3); investing in clean energy technologies like cookstoves and solar kits (SDG 7); scaling up WASH infrastructure to improve sanitation and water access (SDG 6); developing affordable housing and urban planning strategies (SDG 11); and enhancing protection services and community-based safety initiatives (SDG 16).
 
+For more information, please read the (report)[https://kcgu.my.canva.site/d4d-document] and (presentation)[https://kcgu.my.canva.site/d4d-document].
 
 # Methodology
 
@@ -34,7 +35,7 @@ Summed together, each household gets a score out of 1.
 Household gets any value greater than or equal to 0.33 equates to **multidimensional vulnerable**, i.e. deprivation/vulnerable across multiple sectors (**MDDI Poor/Vulnerable**).
 A household is considered sever deprived in any one dimension for which at least 50% of the indicator are coded as positive answers.
 
-## Multidimensional Deprivation and Disparity Index (MDDI)
+## Multi-dimensional deprivation index (FDS South Sudan, 2023)
 
 | Measure                                        | Refugees (N = 20,681) | Host Community North (N = 9,901) | p-value   |
 |-----------------------------------------------|------------------------|----------------------------------|-----------|
