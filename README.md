@@ -26,6 +26,24 @@ MDDI Incidence – severe deprivation (thresholds = 0.50)
 Summed together, each household gets a score out of 1, where any value greater than or equal to 0.33 equates to **multidimensional vulnerable**, i.e. deprivation/vulnerable across multiple sectors (‘MD Poor’).
 A household is considered deprived in any one dimension for which at least 50% of the indicators are coded as positive answers.
 
+## Multidimensional Deprivation and Disparity Index (MDDI)
+
+| Measure                                        | Refugees (N = 20,681) | Host Community North (N = 9,901) | p-value   |
+|-----------------------------------------------|------------------------|----------------------------------|-----------|
+| **MDDI Incidence (threshold = 0.33)**         |                        |                                  | <0.001¹   |
+| HH is not deprived                            | 30%                   | 17%                              |           |
+| HH is deprived                                | 70%                   | 83%                              |           |
+| **MDDI Incidence – Severe Deprivation (≥ 0.50)** |                        |                                  | <0.001¹   |
+| HH is not deprived                            | 73%                   | 53%                              |           |
+| HH is deprived                                | 27%                   | 47%                              |           |
+| **MDDI Score**                                 | 0.40 (0.00, 0.92)     | 0.48 (0.00, 1.00)                | <0.001²   |
+
+**Notes:**
+
+1. Percentages shown; significance tested using **Pearson's Chi-squared test**.  
+2. MDDI score compared using **Wilcoxon rank-sum test**; values reported as **Mean (Minimum, Maximum)**.
+
+
 ## Repository Structure
 ```
 ├── 00_data/
